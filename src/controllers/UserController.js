@@ -141,17 +141,17 @@ exports.findUser = async (req, res) => {
             })
         }
 
-        const user = await User.findById({ id: user_id })
+        const user = await User.findById(user_id)
 
         if (!user) {
             return res.status(404).send({
                 mensagem: "Nenhum usuário encontrado!"
             })
-        } else {
-            return res.status(200).send({
-                mensagem: user
-            })
         }
+
+        return res.status(200).send({
+            mensagem: user
+        })
     } catch (error) {
         console.log("Erro: " + error)
 
