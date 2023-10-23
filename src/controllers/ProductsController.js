@@ -1,20 +1,14 @@
 const Product = require("../models/ProductsModel")
 const yup = require("yup")
-const User = require("../models/UserModel")
+const captureErrorYup = require("../utils/captureErrorYup")
 
 exports.newProduct = async (req, res) => {
     try {
         const user_id = req.params.user_id
 
-        const checkIfUserExist = await User.findById({ id: user_id })
-
         if (!user_id) {
             return res.status(400).send({
                 mensagem: "Nenhum id encontrado!"
-            })
-        } else if (!checkIfUserExist) {
-            return res.status(404).send({
-                mensagem: "Nenhum usuário com esse id foi encontrado!"
             })
         }
 
@@ -44,11 +38,19 @@ exports.newProduct = async (req, res) => {
             product_details: newProduct
         })
     } catch (error) {
-        console.log(error)
+        if(error instanceof yup.ValidationError){
+            const errors = [captureErrorYup(error)]
 
-        return res.status(500).send({
-            mensagem: "Erro ao cadastrar o produto!"
-        })
+            return res.status(422).send({
+                mensagem: errors
+            })
+        }else{
+            console.log(error)
+            
+            return res.status(500).send({
+                mensagem: "Erro ao cadastrar o produto!"
+            })
+        }
     }
 }
 
