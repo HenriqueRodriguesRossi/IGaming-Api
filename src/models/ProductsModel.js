@@ -14,6 +14,10 @@ const ProductsSchema = new mongoose.Schema({
 		type: Number,
 		required: true
 	},
+	src:{
+		type: String,
+		required: false
+	},
 	user_id:{
 		type: String,
 		required: true

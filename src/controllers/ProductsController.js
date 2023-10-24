@@ -14,6 +14,8 @@ exports.newProduct = async (req, res) => {
 
         const { name, price, quantity_in_stock } = req.body
 
+        const file = req.file
+
         const ProductsSchema = yup.object().shape({
             name: yup.string().required("O nome do produto é obrigatório!"),
 
@@ -28,6 +30,7 @@ exports.newProduct = async (req, res) => {
             name,
             price,
             quantity_in_stock,
+            src: file.path,
             user_id: user_id
         })
 
