@@ -16,6 +16,12 @@ exports.newProduct = async (req, res) => {
 
         const file = req.file
 
+        if(!file){
+            return res.status(400).send({
+                mensagem: "Pelo menos uma foto é obrigatória!"
+            })
+        }
+
         const ProductsSchema = yup.object().shape({
             name: yup.string().required("O nome do produto é obrigatório!"),
 
@@ -25,6 +31,16 @@ exports.newProduct = async (req, res) => {
         })
 
         await ProductsSchema.validate(req.body, { abortEarly: false })
+
+        const validateName = await Product.findOne({
+            name
+        })
+
+        if(validateName){
+            return res.status(422).send({
+                mensagem: "Esse jogo já foi cadastrado!"
+            })
+        }
 
         const newProduct = new Product({
             name,
