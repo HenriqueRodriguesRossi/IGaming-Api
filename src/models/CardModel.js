@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const CardSchema = new mongoose.Schema({
-	id_user:{
+	user_id:{
 		type: String,
 		required: true
 	},
@@ -9,7 +9,7 @@ const CardSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	quantidade:{
+	amount:{
 		type: Number,
 		required: true
 	},
