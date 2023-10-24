@@ -46,7 +46,7 @@ exports.newProduct = async (req, res) => {
             })
         }else{
             console.log(error)
-            
+
             return res.status(500).send({
                 mensagem: "Erro ao cadastrar o produto!"
             })
@@ -66,6 +66,150 @@ exports.findAll = async (req, res) => {
 
         return res.status(500).send({
             mensagem: "Erro ao listar os produtos cadastrados!"
+        })
+    }
+}
+
+exports.findUserProducts = async (req, res) => {
+    try {
+        const user_id = req.params.user_id
+
+        if (!user_id) {
+            return res.status(400).send({
+                mensagem: "Nenhum id encontrado!"
+            })
+        }
+
+        const products = await Product.find({ user_id })
+
+        if (products.length === 0) {
+            return res.status(404).send({
+                mensagem: "Nenhum produto encontrado!"
+            })
+        }
+
+        return res.status(200).send({
+            mensagem: products
+        })
+    } catch (error) {
+        console.log(error)
+
+        return res.status(500).send({
+            mensagem: "Erro ao buscar os produtos do usuário!"
+        })
+    }
+}
+
+exports.deleteProduct = async (req, res) => {
+    try {
+        const user_id = req.params.user_id
+        const product_id = req.params.product_id
+
+        if (!user_id || !product_id) {
+            return res.status(400).send({
+                mensagem: "Não foi possível identificar o id do usuário e/ou o id do produto!"
+            })
+        }
+
+        const deleteProduct = await Product.findOneAndDelete({ _id: product_id, user_id })
+
+        if (!deleteProduct) {
+            return res.status(404).send({
+                mensagem: "Nenhum produto encontrado!"
+            })
+        } else {
+            return res.status(200).send({
+                mensagem: "Produto excluído com sucesso!"
+            })
+        }
+    } catch (error) {
+        console.log(error)
+
+        return res.status(500).send({
+            mensagem: "Erro ao excluir o produto!"
+        })
+    }
+}
+
+exports.findProductById = async (req, res) => {
+    try {
+        const user_id = req.params.user_id
+        const product_id = req.params.product_id
+
+        if (!user_id || !product_id) {
+            return res.status(400).send({
+                mensagem: "Não foi possível identificar o id do usuário e/ou o id do produto!"
+            })
+        }
+
+        const product = await Product.findOne({ _id: product_id, user_id })
+
+        if (!product) {
+            return res.status(404).send({
+                mensagem: "Nenhum produto encontrado!"
+            })
+        }
+
+        return res.status(200).send({
+            mensagem: product
+        })
+    } catch (error) {
+        console.log(error)
+
+        return res.status(500).send({
+            mensagem: "Não foi possível buscar o produto!"
+        })
+    }
+}
+
+exports.editProduct = async (req, res) => {
+    try {
+        const user_id = req.params.user_id
+        const product_id = req.params.product_id
+
+        if (!user_id || !product_id) {
+            return res.status(400).send({
+                mensagem: "Não foi possível identificar o id do usuário e/ou o id do produto!"
+            })
+        }
+
+        const { name, price, quantity_in_stock } = req.body
+
+        const updatedFields = {}
+
+        if (name) {
+            updatedFields.name = name
+        }
+
+        if (price) {
+            updatedFields.price = price
+        }
+
+        if (quantity_in_stock) {
+            updatedFields.quantity_in_stock = quantity_in_stock
+        }
+
+        const updatedProduct = await Product.findOneAndUpdate(
+            { _id: product_id, user_id },
+            { $set: updatedFields },
+            { new: true }
+        )
+
+        if (!updatedProduct) {
+            return res.status(404).send({
+                mensagem: "Nenhum produto encontrado!"
+            })
+        }
+
+        return res.status(200).send({
+            mensagem: "Produto atualizado com sucesso!",
+            product_details: updatedProduct
+        })
+    } catch (error) {
+        console.log(error)
+
+        return res.status(500).send({
+            mensagem: "Não foi possível atualizar o produto!"
         })
     }
 }
